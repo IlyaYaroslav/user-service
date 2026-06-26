@@ -47,22 +47,20 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: gradle
 
-      - name: Verify Gradle wrapper
-        run: |
-          test -f gradlew
-          test -f gradle/wrapper/gradle-wrapper.jar
-          test -f gradle/wrapper/gradle-wrapper.properties
-          chmod +x gradlew
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14'
 
       - name: Test
-        run: ./gradlew clean test --no-daemon
+        run: gradle clean test --no-daemon
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/users
           SPRING_DATASOURCE_USERNAME: admin
           SPRING_DATASOURCE_PASSWORD: password
 
       - name: Build jar
-        run: ./gradlew bootJar --no-daemon
+        run: gradle bootJar --no-daemon
 
       - name: Upload jar artifact
         uses: actions/upload-artifact@v4
