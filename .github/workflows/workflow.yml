@@ -47,8 +47,12 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: gradle
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x gradlew
+      - name: Verify Gradle wrapper
+        run: |
+          test -f gradlew
+          test -f gradle/wrapper/gradle-wrapper.jar
+          test -f gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradlew
 
       - name: Test
         run: ./gradlew clean test --no-daemon
