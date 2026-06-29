@@ -125,16 +125,55 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy with Docker Compose
+      - name: Deploy with Docker
         env:
-          USER_SERVICE_DB_URL: ${{ secrets.USER_SERVICE_DB_URL }}
-          USER_SERVICE_DB_USERNAME: ${{ secrets.USER_SERVICE_DB_USERNAME }}
-          USER_SERVICE_DB_PASSWORD: ${{ secrets.USER_SERVICE_DB_PASSWORD }}
           USER_SERVICE_JWT_SECRET: ${{ secrets.USER_SERVICE_JWT_SECRET }}
         run: |
           docker network create taskspace-net 2>/dev/null || true
-          docker compose pull user-service
-          docker compose up -d user-service
-          docker compose ps user-service
-          sleep 10
-          curl -fsS http://localhost:8082/api/user-service/v3/api-docs >/dev/null
+
+          if ! docker ps -a --format '{{.Names}}' | grep -qx users-postgres; then
+            docker run -d \
+              --name users-postgres \
+              --restart unless-stopped \
+              --network taskspace-net \
+              -e POSTGRES_DB=users \
+              -e POSTGRES_USER=admin \
+              -e POSTGRES_PASSWORD=password \
+              -v users_pg_data:/var/lib/postgresql/data \
+              postgres:17
+          else
+            docker start users-postgres
+            docker network connect taskspace-net users-postgres 2>/dev/null || true
+          fi
+
+          for i in {1..30}; do
+            if docker exec users-postgres pg_isready -U admin -d users; then
+              break
+            fi
+            sleep 2
+          done
+
+          docker pull "$IMAGE_NAME:latest"
+          docker rm -f user-service 2>/dev/null || true
+
+          docker run -d \
+            --name user-service \
+            --restart unless-stopped \
+            --network taskspace-net \
+            -p 8082:8081 \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://users-postgres:5432/users \
+            -e SPRING_DATASOURCE_USERNAME=admin \
+            -e SPRING_DATASOURCE_PASSWORD=password \
+            -e SECURITY_JWT_SECRET="${USER_SERVICE_JWT_SECRET:-change-me-change-me-change-me-change-me}" \
+            "$IMAGE_NAME:latest"
+
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8082/api/user-service/v3/api-docs >/dev/null; then
+              docker ps --filter name=user-service
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker logs user-service
+          exit 1
