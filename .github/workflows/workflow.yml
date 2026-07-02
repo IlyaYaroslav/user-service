@@ -18,9 +18,42 @@ env:
   IMAGE_NAME: ghcr.io/ilyayaroslav/user-service
 
 jobs:
+  build:
+    name: Build jar
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14'
+
+      - name: Build jar
+        run: gradle clean bootJar --no-daemon -x test
+
+      - name: Upload jar artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-service-jar
+          path: build/libs/*.jar
+
   test:
     name: Tests
     runs-on: ubuntu-latest
+    needs: build
 
     permissions:
       contents: read
@@ -74,39 +107,6 @@ jobs:
           name: test-reports
           path: build/reports/tests/test
           if-no-files-found: ignore
-
-  build:
-    name: Build jar
-    runs-on: ubuntu-latest
-    needs: test
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: gradle
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.14'
-
-      - name: Build jar
-        run: gradle clean bootJar --no-daemon -x test
-
-      - name: Upload jar artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: user-service-jar
-          path: build/libs/*.jar
 
   publish:
     name: Publish Docker image
@@ -190,5 +190,6 @@ jobs:
           } > .env.deploy
 
           docker compose --env-file .env.deploy pull user-service
+          docker rm -f user-service 2>/dev/null || true
           docker compose --env-file .env.deploy up -d user-service
           rm -f .env.deploy
