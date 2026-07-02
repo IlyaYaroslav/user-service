@@ -3,7 +3,7 @@ package com.taskspace.userservice.controller;
 import com.taskspace.userservice.dto.requst.UserLoginRequestDto;
 import com.taskspace.userservice.dto.requst.UserRegisterRequestDto;
 import com.taskspace.userservice.dto.response.UserLogInResponseDto;
-import com.taskspace.userservice.dto.response.UserRegistereResponseDto;
+import com.taskspace.userservice.dto.response.UserRegisterResponseDto;
 import com.taskspace.userservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class AuthController {
     private final UserService authService;
 
     @PostMapping("/register")
-    public UserRegistereResponseDto register(@Valid @RequestBody UserRegisterRequestDto userCreateRequest){
+    public UserRegisterResponseDto register(@Valid @RequestBody UserRegisterRequestDto userCreateRequest){
         return authService.register(userCreateRequest);
     }
 

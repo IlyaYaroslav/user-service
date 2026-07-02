@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: ${USER_SERVICE_PORT}
   servlet:
     context-path: /api/user-service
 
@@ -7,16 +7,17 @@ spring:
   application:
     name: user-service
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/users
-    username: admin
-    password: password
-    driver-class-name: org.postgresql.Driver
-
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yml
+    change-log: classpath:db/changelog/changelog-master.yml
 
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: true
+  profiles:
+    active: dev
+
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET}
+    expiration-ms: 3600000
