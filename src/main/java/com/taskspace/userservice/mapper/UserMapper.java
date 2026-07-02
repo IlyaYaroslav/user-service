@@ -17,5 +17,6 @@ public interface UserMapper {
 
     UserRegisterResponseDto toRegisterResponseDto(User user, String token);
 
+    @Mapping(target = "accessToken", source = "token")
     UserLogInResponseDto toLoginResponseDto(User user, String token);
 }

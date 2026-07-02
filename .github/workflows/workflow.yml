@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -9,16 +9,21 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
+concurrency:
+  group: user-service-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   JAVA_VERSION: '21'
+  IMAGE_NAME: ghcr.io/ilyayaroslav/user-service
 
 jobs:
   build:
     name: Build jar
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -44,3 +49,88 @@ jobs:
         with:
           name: user-service-jar
           path: build/libs/*.jar
+
+  publish:
+    name: Publish Docker image
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to VPS
+    runs-on: self-hosted
+    needs: publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy user-service
+        shell: bash
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SECURITY_JWT_SECRET: ${{ secrets.SECURITY_JWT_SECRET }}
+          USER_SERVICE_PORT: ${{ secrets.USER_SERVICE_PORT }}
+        run: |
+          set -euo pipefail
+
+          {
+            printf 'IMAGE_NAME=%s\n' "${IMAGE_NAME}:latest"
+            printf 'USER_SERVICE_PORT=%s\n' "${USER_SERVICE_PORT:-8082}"
+            printf 'POSTGRES_HOST=%s\n' "${POSTGRES_HOST}"
+            printf 'POSTGRES_PORT=%s\n' "${POSTGRES_PORT}"
+            printf 'POSTGRES_DB=%s\n' "${POSTGRES_DB}"
+            printf 'POSTGRES_USER=%s\n' "${POSTGRES_USER}"
+            printf 'POSTGRES_PASSWORD=%s\n' "${POSTGRES_PASSWORD}"
+            printf 'SECURITY_JWT_SECRET=%s\n' "${SECURITY_JWT_SECRET}"
+          } > .env.deploy
+
+          docker compose --env-file .env.deploy pull user-service
+          docker compose --env-file .env.deploy up -d user-service
+          rm -f .env.deploy
