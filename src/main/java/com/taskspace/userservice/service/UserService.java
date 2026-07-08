@@ -2,8 +2,12 @@ package com.taskspace.userservice.service;
 
 import com.taskspace.userservice.dto.requst.UserLoginRequestDto;
 import com.taskspace.userservice.dto.requst.UserRegisterRequestDto;
+import com.taskspace.userservice.dto.requst.UserUploadProfilePictureRequestDto;
 import com.taskspace.userservice.dto.response.UserLogInResponseDto;
 import com.taskspace.userservice.dto.response.UserRegisterResponseDto;
+import com.taskspace.userservice.dto.response.user.UserResponseSummaryDto;
+import com.taskspace.userservice.dto.response.user.UserResponseUpdateCredentialsResponseDto;
+import com.taskspace.userservice.dto.response.user.UserUploadProfilePictureResponseDto;
 import com.taskspace.userservice.entity.User;
 import com.taskspace.userservice.exception.user.EmailNotUniqueException;
 import com.taskspace.userservice.exception.user.UserBadCredentialsException;
@@ -14,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +52,27 @@ public class UserService {
         }
 
         return userMapper.toLoginResponseDto(user, jwtService.generateToken(user));
+
+    }
+
+    public UserResponseSummaryDto getUserInfo(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found by id: " + id));
+
+
+        return null;
+    }
+
+    public UserResponseUpdateCredentialsResponseDto userUpdate() {
+        return new UserResponseUpdateCredentialsResponseDto(UUID.randomUUID(),"","");
+
+    }
+
+    public UserUploadProfilePictureResponseDto uploadPhoto(UserUploadProfilePictureRequestDto userUploadProfilePictureRequest) {
+        return null;
+    }
+
+    public void deleteProfilePicture(UUID id) {
 
     }
 }
