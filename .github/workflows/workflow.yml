@@ -118,6 +118,7 @@ jobs:
 
     permissions:
       contents: read
+      packages: read
 
     steps:
       - name: Checkout
@@ -141,6 +142,8 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_PORT: ${{ secrets.VPS_PORT }}
           VPS_USER: ${{ secrets.VPS_USER }}
+          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
           POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -167,6 +170,8 @@ jobs:
 
           "${SSH[@]}" "$TARGET" "mkdir -p ~/apps/user-service"
           "${SCP[@]}" docker-compose.yml .env.deploy "$TARGET:~/apps/user-service/"
+          printf '%s' "$GHCR_TOKEN" | \
+            "${SSH[@]}" "$TARGET" "docker login ghcr.io -u '$GHCR_USERNAME' --password-stdin"
 
           "${SSH[@]}" "$TARGET" '
             set -e
