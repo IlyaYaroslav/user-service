@@ -1,3 +1,4 @@
+/*
 package com.taskspace.userservice.config.minio;
 
 import com.taskspace.userservice.config.minio.props.MinioProperties;
@@ -17,4 +18,4 @@ public class MinioConfig {
                 .credentials(properties.accessKey(), properties.secretKey())
                 .build();
     }
-}
+}*/
