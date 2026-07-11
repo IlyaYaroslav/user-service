@@ -11,7 +11,7 @@ public record UserResponseSummaryDto(
         String email,
         UserRole role,
         String firstName,
-        String secondName,
+        String lastName,
         String profilePicturePresignedUrl
 ) {
 }

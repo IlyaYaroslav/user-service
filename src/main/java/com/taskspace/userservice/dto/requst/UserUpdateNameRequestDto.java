@@ -1,6 +1,6 @@
 package com.taskspace.userservice.dto.requst;
 
-public record UserUpdateRequestDto(
+public record UserUpdateNameRequestDto(
         String newFirstName,
         String newLastName
 ) {

@@ -1,4 +1,3 @@
-/*
 package com.taskspace.userservice.config.minio.props;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,4 +9,4 @@ public record MinioProperties(
         String secretKey,
         String bucket
 ) {
-}*/
+}

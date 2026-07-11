@@ -4,3 +4,12 @@ spring:
     username: admin
     password: password
     driver-class-name: org.postgresql.Driver
+minio:
+  access-key: minioadmin
+  endpoint: http://localhost:9000
+  bucket: user-files
+  secret-key: minioadmin
+
+
+server:
+  port: 8081

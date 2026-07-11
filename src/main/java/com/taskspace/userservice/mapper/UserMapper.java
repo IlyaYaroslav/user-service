@@ -3,6 +3,7 @@ package com.taskspace.userservice.mapper;
 import com.taskspace.userservice.dto.requst.UserRegisterRequestDto;
 import com.taskspace.userservice.dto.response.UserLogInResponseDto;
 import com.taskspace.userservice.dto.response.UserRegisterResponseDto;
+import com.taskspace.userservice.dto.response.user.UserResponseSummaryDto;
 import com.taskspace.userservice.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,4 +20,7 @@ public interface UserMapper {
 
     @Mapping(target = "accessToken", source = "token")
     UserLogInResponseDto toLoginResponseDto(User user, String token);
+
+
+    UserResponseSummaryDto toUserResponseSummaryDto(User user);
 }
