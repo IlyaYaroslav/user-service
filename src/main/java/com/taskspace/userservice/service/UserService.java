@@ -2,6 +2,7 @@ package com.taskspace.userservice.service;
 
 import com.taskspace.userservice.dto.requst.UserLoginRequestDto;
 import com.taskspace.userservice.dto.requst.UserRegisterRequestDto;
+import com.taskspace.userservice.dto.requst.UserUpdateNameRequestDto;
 import com.taskspace.userservice.dto.requst.UserUpdatePasswordRequestDto;
 import com.taskspace.userservice.dto.response.UserLogInResponseDto;
 import com.taskspace.userservice.dto.response.UserRegisterResponseDto;
@@ -64,7 +65,7 @@ public class UserService {
         return userMapper.toUserResponseSummaryDto(user);
     }
 
-    public UserResponseUpdateCredentialsResponseDto updateNames() {
+    public UserResponseUpdateCredentialsResponseDto updateNames(UserUpdateNameRequestDto userUpdateNameRequestDto) {
         return new UserResponseUpdateCredentialsResponseDto(UUID.randomUUID(),"","");
 
     }

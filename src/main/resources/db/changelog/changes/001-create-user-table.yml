@@ -39,3 +39,25 @@ databaseChangeLog:
                   defaultValue: USER
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 1783790318684-1
+      author: yaroslav
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  defaultValue: username
+                  constraints:
+                    nullable: false
+  - changeSet:
+      author: yaroslav
+      id: 1783790534370-1
+      changes:
+        - renameColumn:
+            tableName: users
+            oldColumnName: name
+            newColumnName: first_name

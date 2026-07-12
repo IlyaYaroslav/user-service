@@ -33,17 +33,17 @@ public class UserController {
 
     @PatchMapping("")
     public UserResponseUpdateCredentialsResponseDto updateNames(@RequestBody UserUpdateNameRequestDto userUpdateRequest) {
-        return userService.updateNames();
+        return userService.updateNames(userUpdateRequest);
     }
 
-    @PatchMapping("")
+    @PatchMapping("/password")
     public UserResponseUpdateCredentialsResponseDto updatePassword(@RequestBody UserUpdatePasswordRequestDto userUpdateRequest) {
         return userService.updatePassword(userUpdateRequest);
     }
 
     @PutMapping("/{userId}/profile-picture")
-    public String uploadPhoto(@PathVariable UUID id, @RequestBody MultipartFile file) {
-        return userService.uploadPhoto(id, file);
+    public String uploadPhoto(@PathVariable UUID userId, @RequestBody MultipartFile file) {
+        return userService.uploadPhoto(userId, file);
     }
 
     @DeleteMapping
