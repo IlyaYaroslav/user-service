@@ -25,4 +25,4 @@ security:
 springdoc:
   swagger-ui:
     disable-swagger-default-url: true
-    url: /api/user-service/v3/api-docs
+    url: /v3/api-docs
