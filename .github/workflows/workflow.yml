@@ -39,7 +39,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,6 +64,11 @@ jobs:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: password
           SECURITY_JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+          MINIO_ENDPOINT: http://localhost:9000
+          MINIO_ACCESS_KEY: minioadmin
+          MINIO_SECRET_KEY: minioadmin
+          MINIO_BUCKET: user-files
+          MINIO_INITIALIZE_BUCKET: false
         run: gradle clean test --no-daemon
 
       - name: Upload test reports
@@ -150,6 +154,10 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           SECURITY_JWT_SECRET: ${{ secrets.SECURITY_JWT_SECRET }}
+          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
+          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET }}
         run: |
           set -euo pipefail
           trap 'rm -f .env.deploy' EXIT
@@ -162,6 +170,10 @@ jobs:
             printf 'POSTGRES_USER=%s\n' "${POSTGRES_USER}"
             printf 'POSTGRES_PASSWORD=%s\n' "${POSTGRES_PASSWORD}"
             printf 'SECURITY_JWT_SECRET=%s\n' "${SECURITY_JWT_SECRET}"
+            printf 'MINIO_ENDPOINT=%s\n' "${MINIO_ENDPOINT}"
+            printf 'MINIO_ACCESS_KEY=%s\n' "${MINIO_ACCESS_KEY}"
+            printf 'MINIO_SECRET_KEY=%s\n' "${MINIO_SECRET_KEY}"
+            printf 'MINIO_BUCKET=%s\n' "${MINIO_BUCKET}"
           } > .env.deploy
 
           SSH=(ssh -i ~/.ssh/deploy_key -p "$VPS_PORT")

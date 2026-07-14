@@ -23,6 +23,10 @@ public class FileStorageService {
 
     @PostConstruct
     public void init() {
+        if (Boolean.FALSE.equals(properties.initializeBucket())) {
+            return;
+        }
+
         try {
             boolean bucketExists = minioClient.bucketExists(
                     BucketExistsArgs.builder()
