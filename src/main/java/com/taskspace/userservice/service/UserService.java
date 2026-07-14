@@ -65,7 +65,7 @@ public class UserService {
         return userMapper.toUserResponseSummaryDto(user);
     }
 
-    public UserResponseUpdateCredentialsResponseDto updateNames(UserUpdateNameRequestDto userUpdateNameRequestDto) {
+    public UserResponseUpdateCredentialsResponseDto updateNames(UUID userId, UserUpdateNameRequestDto userUpdateNameRequestDto) {
         return new UserResponseUpdateCredentialsResponseDto(UUID.randomUUID(),"","");
 
     }
@@ -78,7 +78,7 @@ public class UserService {
 
     }
 
-    public UserResponseUpdateCredentialsResponseDto updatePassword(UserUpdatePasswordRequestDto userUpdateRequest) {
+    public UserResponseUpdateCredentialsResponseDto updatePassword(UUID userId, UserUpdatePasswordRequestDto userUpdateRequest) {
         return null;
     }
 }

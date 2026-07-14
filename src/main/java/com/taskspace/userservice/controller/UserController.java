@@ -31,14 +31,17 @@ public class UserController {
         return userService.getUserInfo(userId);
     }
 
-    @PatchMapping("")
-    public UserResponseUpdateCredentialsResponseDto updateNames(@RequestBody UserUpdateNameRequestDto userUpdateRequest) {
-        return userService.updateNames(userUpdateRequest);
+    @PatchMapping("{userId}/name")
+    public UserResponseUpdateCredentialsResponseDto updateNames(
+            @PathVariable UUID userId,
+            @RequestBody UserUpdateNameRequestDto userUpdateRequest
+    ) {
+        return userService.updateNames(userId, userUpdateRequest);
     }
 
-    @PatchMapping("/password")
-    public UserResponseUpdateCredentialsResponseDto updatePassword(@RequestBody UserUpdatePasswordRequestDto userUpdateRequest) {
-        return userService.updatePassword(userUpdateRequest);
+    @PatchMapping("{userId}/password")
+    public UserResponseUpdateCredentialsResponseDto updatePassword(@PathVariable UUID userId, @RequestBody UserUpdatePasswordRequestDto userUpdateRequest) {
+        return userService.updatePassword(userId, userUpdateRequest);
     }
 
     @PutMapping("/{userId}/profile-picture")
@@ -50,5 +53,4 @@ public class UserController {
     public void deleteProfilePicture(@RequestParam UUID id) {
         userService.deleteProfilePicture(id);
     }
-
 }
