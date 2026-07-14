@@ -21,3 +21,8 @@ security:
   jwt:
     secret: ${SECURITY_JWT_SECRET}
     expiration-ms: 3600000
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    url: /api/user-service/v3/api-docs
