@@ -49,8 +49,8 @@ public class UserController {
         return userService.uploadPhoto(userId, file);
     }
 
-    @DeleteMapping
-    public void deleteProfilePicture(@RequestParam UUID id) {
-        userService.deleteProfilePicture(id);
+    @DeleteMapping("/{userId}/profile-picture")
+    public void deleteProfilePicture(@PathVariable UUID userId) {
+        userService.deleteProfilePicture(userId);
     }
 }
