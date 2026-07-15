@@ -9,5 +9,7 @@ public record MinioProperties(
         String secretKey,
         String bucket,
         boolean initializeBucket
+
+
 ) {
 }
