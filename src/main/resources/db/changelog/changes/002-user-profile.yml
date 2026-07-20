@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-make-last-name-optional
+      author: codex
+      changes:
+        - dropNotNullConstraint:
+            tableName: users
+            columnName: last_name
+            columnDataType: varchar(100)
+
+  - changeSet:
+      id: 003-add-profile-picture-object-name
+      author: codex
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: profile_picture_object_name
+                  type: varchar(255)
