@@ -2,7 +2,6 @@ package com.taskspace.userservice.dto.requst;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
@@ -10,16 +9,18 @@ import lombok.Builder;
 public record UserRegisterRequestDto(
 
         @NotBlank
-        @NotEmpty
-        String name,
+        @Size(max = 100)
+        String firstName,
+
+        @Size(max = 100)
+        String lastName,
 
         @NotBlank
-        @NotEmpty
-        @Size(min = 8, message = "Пароль не может быть меньше 8")
+        @Size(min = 8, message = "Password must contain at least 8 characters")
         String password,
 
+        @NotBlank
         @Email
-        @NotEmpty
         String email
 ) {
 }

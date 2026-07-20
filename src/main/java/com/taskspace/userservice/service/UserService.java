@@ -8,7 +8,10 @@ import com.taskspace.userservice.dto.response.UserLogInResponseDto;
 import com.taskspace.userservice.dto.response.UserRegisterResponseDto;
 import com.taskspace.userservice.dto.response.user.UserResponseSummaryDto;
 import com.taskspace.userservice.dto.response.user.UserResponseUpdateCredentialsResponseDto;
+import com.taskspace.userservice.dto.response.user.UserUpdatePasswordResponseDto;
+import com.taskspace.userservice.dto.response.user.UserUploadProfilePictureResponseDto;
 import com.taskspace.userservice.entity.User;
+import com.taskspace.userservice.exception.PasswordIncorrectException;
 import com.taskspace.userservice.exception.user.EmailNotUniqueException;
 import com.taskspace.userservice.exception.user.UserBadCredentialsException;
 import com.taskspace.userservice.exception.user.UserNotFoundException;
@@ -62,23 +65,57 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found by id: " + id));
 
 
-        return userMapper.toUserResponseSummaryDto(user);
+        String profilePicturePresignedUrl = fileStorageService.getPresignedUrl(user.getProfilePictureObjectName());
+        return userMapper.toUserResponseSummaryDto(user, profilePicturePresignedUrl);
     }
 
+    @Transactional
     public UserResponseUpdateCredentialsResponseDto updateNames(UUID userId, UserUpdateNameRequestDto userUpdateNameRequestDto) {
-        return new UserResponseUpdateCredentialsResponseDto(UUID.randomUUID(),"","");
+        User user = findUser(userId);
+        user.setFirstName(userUpdateNameRequestDto.newFirstName());
+        user.setLastName(userUpdateNameRequestDto.newLastName());
 
+        return new UserResponseUpdateCredentialsResponseDto(user.getId(), user.getFirstName(), user.getLastName());
     }
 
-    public String uploadPhoto(UUID userId, MultipartFile file) {
-        return fileStorageService.upload(file);
+    @Transactional
+    public UserUploadProfilePictureResponseDto uploadPhoto(UUID userId, MultipartFile file) {
+        User user = findUser(userId);
+        String oldObjectName = user.getProfilePictureObjectName();
+        String newObjectName = fileStorageService.upload(file);
+        user.setProfilePictureObjectName(newObjectName);
+
+        if (oldObjectName != null) {
+            fileStorageService.delete(oldObjectName);
+        }
+
+        return new UserUploadProfilePictureResponseDto(
+                user.getId(),
+                fileStorageService.getPresignedUrl(newObjectName)
+        );
     }
 
+    @Transactional
     public void deleteProfilePicture(UUID id) {
-
+        User user = findUser(id);
+        String objectName = user.getProfilePictureObjectName();
+        fileStorageService.delete(objectName);
+        user.setProfilePictureObjectName(null);
     }
 
-    public UserResponseUpdateCredentialsResponseDto updatePassword(UUID userId, UserUpdatePasswordRequestDto userUpdateRequest) {
-        return null;
+    @Transactional
+    public UserUpdatePasswordResponseDto updatePassword(UUID userId, UserUpdatePasswordRequestDto userUpdateRequest) {
+        User user = findUser(userId);
+        if (!passEncoder.matches(userUpdateRequest.oldPassword(), user.getPassword())) {
+            throw new PasswordIncorrectException("");
+        }
+
+        user.setPassword(passEncoder.encode(userUpdateRequest.newPassword()));
+        return new UserUpdatePasswordResponseDto(user.getId());
+    }
+
+    private User findUser(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found by id: " + userId));
     }
 }

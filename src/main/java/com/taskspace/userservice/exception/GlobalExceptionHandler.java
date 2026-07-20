@@ -64,4 +64,13 @@ public class GlobalExceptionHandler {
                 .errorMessage(e.getMessage())
                 .build());
     }
+
+    @ExceptionHandler(PasswordIncorrectException.class)
+    public ResponseEntity<ErrorCommonResponse> handlePasswordIncorrect(PasswordIncorrectException e) {
+        log.warn("Password is incorrect: {}", e.getMessage());
+
+        return ResponseEntity.status(401).body(ErrorCommonResponse.builder()
+                .errorMessage(e.getMessage())
+                .build());
+    }
 }

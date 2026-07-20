@@ -4,8 +4,13 @@ import com.taskspace.userservice.dto.requst.UserUpdatePasswordRequestDto;
 import com.taskspace.userservice.dto.requst.UserUpdateNameRequestDto;
 import com.taskspace.userservice.dto.response.user.UserResponseSummaryDto;
 import com.taskspace.userservice.dto.response.user.UserResponseUpdateCredentialsResponseDto;
+import com.taskspace.userservice.dto.response.user.UserUpdatePasswordResponseDto;
+import com.taskspace.userservice.dto.response.user.UserUploadProfilePictureResponseDto;
 import com.taskspace.userservice.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,23 +39,30 @@ public class UserController {
     @PatchMapping("{userId}/name")
     public UserResponseUpdateCredentialsResponseDto updateNames(
             @PathVariable UUID userId,
-            @RequestBody UserUpdateNameRequestDto userUpdateRequest
+            @Valid @RequestBody UserUpdateNameRequestDto userUpdateRequest
     ) {
         return userService.updateNames(userId, userUpdateRequest);
     }
 
     @PatchMapping("{userId}/password")
-    public UserResponseUpdateCredentialsResponseDto updatePassword(@PathVariable UUID userId, @RequestBody UserUpdatePasswordRequestDto userUpdateRequest) {
+    public UserUpdatePasswordResponseDto updatePassword(
+            @PathVariable UUID userId,
+            @Valid @RequestBody UserUpdatePasswordRequestDto userUpdateRequest
+    ) {
         return userService.updatePassword(userId, userUpdateRequest);
     }
 
-    @PutMapping("/{userId}/profile-picture")
-    public String uploadPhoto(@PathVariable UUID userId, @RequestBody MultipartFile file) {
+    @PutMapping(value = "/{userId}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UserUploadProfilePictureResponseDto uploadPhoto(
+            @PathVariable UUID userId,
+            @RequestParam("file") MultipartFile file
+    ) {
         return userService.uploadPhoto(userId, file);
     }
 
     @DeleteMapping("/{userId}/profile-picture")
-    public void deleteProfilePicture(@PathVariable UUID userId) {
+    public ResponseEntity<Void> deleteProfilePicture(@PathVariable UUID userId) {
         userService.deleteProfilePicture(userId);
+        return ResponseEntity.noContent().build();
     }
 }

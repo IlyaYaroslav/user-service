@@ -1,4 +1,9 @@
 package com.taskspace.userservice.dto.response.user;
 
-public record UserUploadProfilePictureResponseDto() {
+import java.util.UUID;
+
+public record UserUploadProfilePictureResponseDto(
+        UUID id,
+        String profilePicturePresignedUrl
+) {
 }

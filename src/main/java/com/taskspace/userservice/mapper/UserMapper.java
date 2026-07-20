@@ -14,6 +14,7 @@ public interface UserMapper {
 
     @Mapping(target = "role", constant = "USER")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "profilePictureObjectName", ignore = true)
     User toEntity(UserRegisterRequestDto userCreateRequestDto);
 
     UserRegisterResponseDto toRegisterResponseDto(User user, String token);
@@ -22,5 +23,6 @@ public interface UserMapper {
     UserLogInResponseDto toLoginResponseDto(User user, String token);
 
 
-    UserResponseSummaryDto toUserResponseSummaryDto(User user);
+    @Mapping(target = "profilePicturePresignedUrl", source = "profilePicturePresignedUrl")
+    UserResponseSummaryDto toUserResponseSummaryDto(User user, String profilePicturePresignedUrl);
 }

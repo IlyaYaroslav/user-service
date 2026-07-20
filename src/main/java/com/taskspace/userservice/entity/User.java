@@ -34,8 +34,11 @@ public class User {
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, unique = true, length = 100)
+    @Column(name = "last_name", length = 100)
     private String lastName;
+
+    @Column(name = "profile_picture_object_name", length = 255)
+    private String profilePictureObjectName;
 
     @Column(name = "password", nullable = false, length = 250)
     private String password;
