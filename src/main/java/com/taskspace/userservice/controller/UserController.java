@@ -31,12 +31,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("{userId}")
+    @GetMapping("/{userId}")
     public UserResponseSummaryDto getUser(@PathVariable UUID userId) {
         return userService.getUserInfo(userId);
     }
 
-    @PatchMapping("{userId}/name")
+    @PatchMapping("/{userId}/name")
     public UserResponseUpdateCredentialsResponseDto updateNames(
             @PathVariable UUID userId,
             @Valid @RequestBody UserUpdateNameRequestDto userUpdateRequest
@@ -44,7 +44,7 @@ public class UserController {
         return userService.updateNames(userId, userUpdateRequest);
     }
 
-    @PatchMapping("{userId}/password")
+    @PatchMapping("/{userId}/password")
     public UserUpdatePasswordResponseDto updatePassword(
             @PathVariable UUID userId,
             @Valid @RequestBody UserUpdatePasswordRequestDto userUpdateRequest
