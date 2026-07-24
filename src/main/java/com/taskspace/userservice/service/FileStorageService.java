@@ -12,8 +12,8 @@ import io.minio.Http.Method;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.UUID;
@@ -50,20 +50,16 @@ public class FileStorageService {
         }
     }
 
-    public String upload(MultipartFile file) {
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename != null && originalFilename.lastIndexOf('.') >= 0
-                ? originalFilename.substring(originalFilename.lastIndexOf('.'))
-                : "";
-        String objectName = UUID.randomUUID() + extension;
+    public String upload(byte[] file, String contentType) {
+        String objectName = UUID.randomUUID().toString();
 
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(properties.bucket())
                             .object(objectName)
-                            .stream(file.getInputStream(), file.getSize(), -1L)
-                            .contentType(file.getContentType())
+                            .stream(new ByteArrayInputStream(file), (long) file.length, -1L)
+                            .contentType(contentType)
                             .build()
             );
 

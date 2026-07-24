@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -40,9 +39,6 @@ class UserServiceTest {
     private JwtService jwtService;
     @Mock
     private FileStorageService fileStorageService;
-    @Mock
-    private MultipartFile file;
-
     @InjectMocks
     private UserService userService;
 
@@ -93,12 +89,14 @@ class UserServiceTest {
     @Test
     void uploadPhotoReplacesOldObjectAndReturnsPresignedUrl() {
         User user = user();
+        byte[] file = {1, 2, 3};
+        String contentType = "image/png";
         user.setProfilePictureObjectName("old-object");
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(fileStorageService.upload(file)).thenReturn("new-object");
+        when(fileStorageService.upload(file, contentType)).thenReturn("new-object");
         when(fileStorageService.getPresignedUrl("new-object")).thenReturn("https://minio/avatar");
 
-        UserUploadProfilePictureResponseDto response = userService.uploadPhoto(user.getId(), file);
+        UserUploadProfilePictureResponseDto response = userService.uploadPhoto(user.getId(), file, contentType);
 
         assertEquals(user.getId(), response.id());
         assertEquals("https://minio/avatar", response.profilePicturePresignedUrl());

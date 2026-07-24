@@ -10,10 +10,7 @@ public record UserRegisterRequestDto(
 
         @NotBlank
         @Size(max = 100)
-        String firstName,
-
-        @Size(max = 100)
-        String lastName,
+        String name,
 
         @NotBlank
         @Size(min = 8, message = "Password must contain at least 8 characters")

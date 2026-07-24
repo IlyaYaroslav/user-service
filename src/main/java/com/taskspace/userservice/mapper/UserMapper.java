@@ -14,6 +14,8 @@ public interface UserMapper {
 
     @Mapping(target = "role", constant = "USER")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "firstName", source = "name")
+    @Mapping(target = "lastName", ignore = true)
     @Mapping(target = "profilePictureObjectName", ignore = true)
     User toEntity(UserRegisterRequestDto userCreateRequestDto);
 

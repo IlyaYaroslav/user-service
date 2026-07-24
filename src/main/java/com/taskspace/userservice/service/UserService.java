@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -79,10 +78,10 @@ public class UserService {
     }
 
     @Transactional
-    public UserUploadProfilePictureResponseDto uploadPhoto(UUID userId, MultipartFile file) {
+    public UserUploadProfilePictureResponseDto uploadPhoto(UUID userId, byte[] file, String contentType) {
         User user = findUser(userId);
         String oldObjectName = user.getProfilePictureObjectName();
-        String newObjectName = fileStorageService.upload(file);
+        String newObjectName = fileStorageService.upload(file, contentType);
         user.setProfilePictureObjectName(newObjectName);
 
         if (oldObjectName != null) {
