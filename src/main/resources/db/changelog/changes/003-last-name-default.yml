@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-remove-last-name-default
+      author: codex
+      changes:
+        - dropDefaultValue:
+            tableName: users
+            columnName: last_name
+            columnDataType: varchar(100)
+        - sql:
+            sql: UPDATE users SET last_name = NULL WHERE last_name = 'username'

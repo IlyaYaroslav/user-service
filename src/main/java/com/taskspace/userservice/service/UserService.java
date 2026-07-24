@@ -71,8 +71,13 @@ public class UserService {
     @Transactional
     public UserResponseUpdateCredentialsResponseDto updateNames(UUID userId, UserUpdateNameRequestDto userUpdateNameRequestDto) {
         User user = findUser(userId);
-        user.setFirstName(userUpdateNameRequestDto.newFirstName());
-        user.setLastName(userUpdateNameRequestDto.newLastName());
+
+        if (userUpdateNameRequestDto.newFirstName() != null) {
+            user.setFirstName(userUpdateNameRequestDto.newFirstName());
+        }
+        if (userUpdateNameRequestDto.newLastName() != null) {
+            user.setLastName(userUpdateNameRequestDto.newLastName());
+        }
 
         return new UserResponseUpdateCredentialsResponseDto(user.getId(), user.getFirstName(), user.getLastName());
     }

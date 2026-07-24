@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/changelog/changes/001-create-user-table.yml
   - include:
       file: db/changelog/changes/002-user-profile.yml
+  - include:
+      file: db/changelog/changes/003-last-name-default.yml

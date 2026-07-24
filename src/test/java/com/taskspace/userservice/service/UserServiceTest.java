@@ -43,7 +43,7 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    void updateNamesUpdatesFirstAndOptionalLastName() {
+    void updateNamesUpdatesOnlyProvidedFirstName() {
         User user = user();
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
@@ -53,9 +53,25 @@ class UserServiceTest {
 
         assertEquals(user.getId(), response.id());
         assertEquals("New name", response.firstName());
-        assertNull(response.lastName());
+        assertEquals("Last", response.lastName());
         assertEquals("New name", user.getFirstName());
-        assertNull(user.getLastName());
+        assertEquals("Last", user.getLastName());
+    }
+
+    @Test
+    void updateNamesUpdatesOnlyProvidedLastName() {
+        User user = user();
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        UserResponseUpdateCredentialsResponseDto response = userService.updateNames(
+                user.getId(), new UserUpdateNameRequestDto(null, "New last name")
+        );
+
+        assertEquals(user.getId(), response.id());
+        assertEquals("First", response.firstName());
+        assertEquals("New last name", response.lastName());
+        assertEquals("First", user.getFirstName());
+        assertEquals("New last name", user.getLastName());
     }
 
     @Test
