@@ -65,6 +65,7 @@ jobs:
           POSTGRES_PASSWORD: password
           SECURITY_JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
           MINIO_ENDPOINT: http://localhost:9000
+          MINIO_PUBLIC_ENDPOINT: http://localhost:9000
           MINIO_ACCESS_KEY: minioadmin
           MINIO_SECRET_KEY: minioadmin
           MINIO_BUCKET: user-files
@@ -171,6 +172,7 @@ jobs:
             printf 'POSTGRES_PASSWORD=%s\n' "${POSTGRES_PASSWORD}"
             printf 'SECURITY_JWT_SECRET=%s\n' "${SECURITY_JWT_SECRET}"
             printf 'MINIO_ENDPOINT=%s\n' "${MINIO_ENDPOINT}"
+            printf 'MINIO_PUBLIC_ENDPOINT=http://%s:9000\n' "${VPS_HOST}"
             printf 'MINIO_ACCESS_KEY=%s\n' "${MINIO_ACCESS_KEY}"
             printf 'MINIO_SECRET_KEY=%s\n' "${MINIO_SECRET_KEY}"
             printf 'MINIO_BUCKET=%s\n' "${MINIO_BUCKET}"

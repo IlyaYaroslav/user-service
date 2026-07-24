@@ -75,6 +75,22 @@ class UserServiceTest {
     }
 
     @Test
+    void updateNamesClearsLastNameWhenBlank() {
+        User user = user();
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        UserResponseUpdateCredentialsResponseDto response = userService.updateNames(
+                user.getId(), new UserUpdateNameRequestDto(null, "")
+        );
+
+        assertEquals(user.getId(), response.id());
+        assertEquals("First", response.firstName());
+        assertNull(response.lastName());
+        assertEquals("First", user.getFirstName());
+        assertNull(user.getLastName());
+    }
+
+    @Test
     void updatePasswordEncodesNewPasswordAndReturnsOnlyId() {
         User user = user();
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));

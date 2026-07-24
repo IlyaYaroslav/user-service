@@ -76,7 +76,11 @@ public class UserService {
             user.setFirstName(userUpdateNameRequestDto.newFirstName());
         }
         if (userUpdateNameRequestDto.newLastName() != null) {
-            user.setLastName(userUpdateNameRequestDto.newLastName());
+            user.setLastName(
+                    userUpdateNameRequestDto.newLastName().isBlank()
+                            ? null
+                            : userUpdateNameRequestDto.newLastName()
+            );
         }
 
         return new UserResponseUpdateCredentialsResponseDto(user.getId(), user.getFirstName(), user.getLastName());

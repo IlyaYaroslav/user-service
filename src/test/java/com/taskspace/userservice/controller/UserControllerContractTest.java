@@ -119,4 +119,45 @@ class UserControllerContractTest {
         assertNull(requestCaptor.getValue().newFirstName());
         assertEquals("Smith", requestCaptor.getValue().newLastName());
     }
+
+    @Test
+    void updateNamesAcceptsEmptyLastNameForDeletion() throws Exception {
+        UUID userId = UUID.randomUUID();
+        when(userService.updateNames(eq(userId), any()))
+                .thenReturn(new UserResponseUpdateCredentialsResponseDto(
+                        userId,
+                        "Alice",
+                        null
+                ));
+
+        mockMvc.perform(patch("/users/{userId}/name", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "newLastName": ""
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("Alice"))
+                .andExpect(jsonPath("$.lastName").doesNotExist());
+
+        ArgumentCaptor<UserUpdateNameRequestDto> requestCaptor =
+                ArgumentCaptor.forClass(UserUpdateNameRequestDto.class);
+        verify(userService).updateNames(eq(userId), requestCaptor.capture());
+        assertEquals("", requestCaptor.getValue().newLastName());
+    }
+
+    @Test
+    void updateNamesRejectsEmptyFirstName() throws Exception {
+        UUID userId = UUID.randomUUID();
+
+        mockMvc.perform(patch("/users/{userId}/name", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "newFirstName": ""
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
 }

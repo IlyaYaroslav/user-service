@@ -10,7 +10,7 @@ import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Http.Method;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -19,11 +19,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class FileStorageService {
 
     private final MinioClient minioClient;
+    private final MinioClient publicMinioClient;
     private final MinioProperties properties;
+
+    public FileStorageService(
+            @Qualifier("internalMinioClient") MinioClient minioClient,
+            @Qualifier("publicMinioClient") MinioClient publicMinioClient,
+            MinioProperties properties
+    ) {
+        this.minioClient = minioClient;
+        this.publicMinioClient = publicMinioClient;
+        this.properties = properties;
+    }
 
     @PostConstruct
     public void init() {
@@ -75,7 +85,7 @@ public class FileStorageService {
         }
 
         try {
-            return minioClient.getPresignedObjectUrl(
+            return publicMinioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
                             .bucket(properties.bucket())
