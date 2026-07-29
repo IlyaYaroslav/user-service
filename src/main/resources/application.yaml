@@ -20,7 +20,7 @@ spring:
 security:
   jwt:
     secret: ${SECURITY_JWT_SECRET}
-    expiration-ms: 3600000
+    expiration-ms: 3_000_600_000
 
 springdoc:
   swagger-ui:
