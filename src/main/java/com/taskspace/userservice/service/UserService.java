@@ -7,7 +7,7 @@ import com.taskspace.userservice.dto.requst.UserUpdatePasswordRequestDto;
 import com.taskspace.userservice.dto.response.UserLogInResponseDto;
 import com.taskspace.userservice.dto.response.UserRegisterResponseDto;
 import com.taskspace.userservice.dto.response.user.UserResponseSummaryDto;
-import com.taskspace.userservice.dto.response.user.UserResponseUpdateCredentialsResponseDto;
+import com.taskspace.userservice.dto.response.user.UserSummaryResponseDto;
 import com.taskspace.userservice.dto.response.user.UserUpdatePasswordResponseDto;
 import com.taskspace.userservice.dto.response.user.UserUploadProfilePictureResponseDto;
 import com.taskspace.userservice.entity.User;
@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -56,7 +57,6 @@ public class UserService {
         }
 
         return userMapper.toLoginResponseDto(user, jwtService.generateToken(user));
-
     }
 
     public UserResponseSummaryDto getUserInfo(UUID id) {
@@ -69,7 +69,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseUpdateCredentialsResponseDto updateNames(UUID userId, UserUpdateNameRequestDto userUpdateNameRequestDto) {
+    public UserSummaryResponseDto updateNames(UUID userId, UserUpdateNameRequestDto userUpdateNameRequestDto) {
         User user = findUser(userId);
 
         if (userUpdateNameRequestDto.newFirstName() != null) {
@@ -83,7 +83,7 @@ public class UserService {
             );
         }
 
-        return new UserResponseUpdateCredentialsResponseDto(user.getId(), user.getFirstName(), user.getLastName());
+        return new UserSummaryResponseDto(user.getId(), user.getFirstName(), user.getLastName());
     }
 
     @Transactional
@@ -125,5 +125,9 @@ public class UserService {
     private User findUser(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found by id: " + userId));
+    }
+
+    public List<UserSummaryResponseDto> getAllUsers() {
+        return userMapper.toSummaryDto(userRepository.findAll());
     }
 }

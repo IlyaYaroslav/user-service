@@ -3,7 +3,7 @@ package com.taskspace.userservice.controller;
 import com.taskspace.userservice.dto.requst.UserUpdatePasswordRequestDto;
 import com.taskspace.userservice.dto.requst.UserUpdateNameRequestDto;
 import com.taskspace.userservice.dto.response.user.UserResponseSummaryDto;
-import com.taskspace.userservice.dto.response.user.UserResponseUpdateCredentialsResponseDto;
+import com.taskspace.userservice.dto.response.user.UserSummaryResponseDto;
 import com.taskspace.userservice.dto.response.user.UserUpdatePasswordResponseDto;
 import com.taskspace.userservice.dto.response.user.UserUploadProfilePictureResponseDto;
 import com.taskspace.userservice.service.UserService;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,11 +38,16 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/name")
-    public UserResponseUpdateCredentialsResponseDto updateNames(
+    public UserSummaryResponseDto updateNames(
             @PathVariable UUID userId,
             @Valid @RequestBody UserUpdateNameRequestDto userUpdateRequest
     ) {
         return userService.updateNames(userId, userUpdateRequest);
+    }
+
+    @GetMapping()
+    public List<UserSummaryResponseDto> getAllUsers(){
+        return userService.getAllUsers();
     }
 
     @PatchMapping("/{userId}/password")
