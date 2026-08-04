@@ -27,7 +27,6 @@ public interface UserMapper {
     @Mapping(target = "accessToken", source = "token")
     UserLogInResponseDto toLoginResponseDto(User user, String token);
 
-
     @Mapping(target = "profilePicturePresignedUrl", source = "profilePicturePresignedUrl")
     UserResponseSummaryDto toUserResponseSummaryDto(User user, String profilePicturePresignedUrl);
 
